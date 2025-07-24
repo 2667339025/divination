@@ -212,7 +212,7 @@ function Bazi() {
                 <div className="relative">
                   <div className="bg-primary/10 absolute left-0 right-0 h-px mx-8 top-1/2 -translate-y-1/2 z-0"></div>
                 </div>
-                <div className="bg-[#FAFAF9] relative z-10 mx-4 sm:mx-4 rounded-sm border py-2 text-center whitespace-break-spaces shadow-xs delay-100 animate-in fade-in slide-in-from-bottom-30 fill-mode-backwards duration-300">
+                <div className="bg-background/50 relative z-10 mx-4 sm:mx-4 rounded-sm border py-2 text-center whitespace-break-spaces shadow-xs delay-100 animate-in fade-in slide-in-from-bottom-30 fill-mode-backwards duration-300 mb-4">
                   <span className="absolute left-2 flex items-center gap-1 font-semibold">五行<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-right" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></span>
                   <div className="flex justify-center gap-4">
                     {['金','木','水','火','土'].map((element) => {
@@ -232,7 +232,7 @@ function Bazi() {
                 <div className="bg-background/50 z-10 ml-4 flex w-fit items-center gap-1 rounded-sm border px-2 py-1 font-semibold shadow-xs delay-150 sm:ml-4 animate-in fade-in slide-in-from-bottom-30 fill-mode-backwards duration-300">
                   纳音<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-right" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
                 </div>
-                <div className="z-10 flex justify-around gap-8 delay-200 animate-in fade-in slide-in-from-bottom-30 fill-mode-backwards duration-300">
+                <div className="z-10 flex justify-around gap-8 delay-200 animate-in fade-in slide-in-from-bottom-30 fill-mode-backwards duration-300 mb-4">
                   {result.split('\n')
                     .filter(l => l.includes('纳音：'))
                     .flatMap(l => l.replace('纳音：','').split(' '))
@@ -243,6 +243,22 @@ function Bazi() {
                       </div>
                     ))
                     }
+                </div>
+                {/* 十神信息 */}
+                <div className="bg-background/50 z-10 ml-4 flex w-fit items-center gap-1 rounded-sm border px-2 py-1 font-semibold shadow-xs delay-150 sm:ml-4 animate-in fade-in slide-in-from-bottom-30 fill-mode-backwards duration-300">
+                  十神<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-right" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                </div>
+                <div className="z-10 flex justify-around gap-8 delay-300 animate-in fade-in slide-in-from-bottom-30 fill-mode-backwards duration-300 mb-4">
+                  {result.split('\n')
+                    .filter(l => l.includes('十神：'))
+                    .flatMap(l => l.replace('十神：','').split(' '))
+                    .slice(0,4)
+                    .map((shishen, i) => (
+                      <div key={`shi-shen-${i}`} className="bg-background/50 text-muted-foreground relative rounded-sm border px-4 py-0.5 shadow-xs mx-2">
+                        {shishen}
+                      </div>
+                    ))
+                  }
                 </div>
               </div>
         </div>

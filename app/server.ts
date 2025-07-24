@@ -4,8 +4,9 @@ import { createOpenAI } from "@ai-sdk/openai";
 import { createStreamableValue } from "ai/rsc";
 import { ERROR_PREFIX } from "@/lib/constant";
 
-const model = process.env.OPENAI_MODEL ?? "gpt-3.5-turbo";
-const openai = createOpenAI({ baseURL: process.env.OPENAI_BASE_URL });
+const model = process.env.OPENAI_MODEL ?? "qwen-turbo";
+const baseURL = process.env.OPENAI_BASE_URL?.replace(/\/chat\/completions$/, '') || 'https://dashscope.aliyuncs.com/compatible-mode/v1';
+const openai = createOpenAI({ apiKey: process.env.OPENAI_API_KEY, baseURL });
 
 const STREAM_INTERVAL = 60;
 const MAX_SIZE = 6;
@@ -17,7 +18,11 @@ export async function getAnswer(
   guaResult: string,
   guaChange: string,
 ) {
-  console.log(prompt, guaTitle, guaResult, guaChange);
+  // 调试环境变量和参数
+console.log('模型配置:', { model, baseURL: process.env.OPENAI_BASE_URL });
+console.log('API_KEY是否存在:', !!process.env.OPENAI_API_KEY);
+console.log('请求参数:', { prompt, guaTitle, guaResult, guaChange });
+console.log(prompt, guaTitle, guaResult, guaChange);
   const stream = createStreamableValue();
   try {
     const res = await fetch(
@@ -61,8 +66,8 @@ export async function getAnswer(
           content: `我摇到的卦象：${guaTitle} ${guaResult} ${guaChange}
 我的问题：${prompt}
 
-${explain}
-${changeList.join("\n")}`,
+${explain || "未找到卦象详细解释"}
+${changeList.length > 0 ? changeList.join("\n") : "无变爻信息"}`,
         },
       ],
       maxRetries: 0,
@@ -94,7 +99,12 @@ ${changeList.join("\n")}`,
             break;
           case "error":
             const err = part.error as any;
-            stream.update(ERROR_PREFIX + (err.message ?? err.toString()));
+            // 输出详细错误信息用于调试
+            console.error('API Error:', JSON.stringify(err, null, 2));
+            const errorDetails = err.message || err.toString();
+            const statusCode = err.status || 'Unknown';
+            const errorMessage = `${ERROR_PREFIX} (状态码: ${statusCode}) ${errorDetails}`;
+            stream.update(errorMessage);
             break;
         }
       }
@@ -106,7 +116,8 @@ ${changeList.join("\n")}`,
 
     return { data: stream.value };
   } catch (err: any) {
+    console.error('API Request Error:', JSON.stringify(err, null, 2));
     stream.done();
-    return { error: err.message ?? err };
+    return { error: `请求失败: ${err.message ?? err.toString()}` };
   }
 }
